@@ -651,4 +651,498 @@ print("সঠিক জিপ কোডসমূহ:", valid_codes)
 * **Python:** সাধারণত অ্যানালিটিক্স ডাটাবেইজ, **BigQuery**, **Pandas**, বা **ETL Pipeline**-এ লাখ লাখ অগোছালো ডাটা রিক্লিন বা প্রসেস করার ক্ষেত্রে ব্যবহৃত হয়।
 
 
+---
+
+ওয়েব ও ডেটা অ্যানালিটিক্সে রেগুলার এক্সপ্রেশনের (RegEx) আরও অনেকগুলো বাস্তবমুখী এবং অ্যাডভান্সড ব্যবহার রয়েছে।
+
+নিচে **আরও ৪টি গুরুত্বপূর্ণ রিয়েল-লাইফ কেস স্টাডি**JavaScript (ES5) এবং Python কোডসহ ব্যাখ্যা করা হলো:
+
+---
+
+### কেস ৬: Google Tag Manager / Analytics-এ IP Anonymization & Filtering
+
+**সমস্যা:** GDPR / প্রাইভেসি নিয়মের কারণে ইউজারের পুরো IP অ্যাড্রেস (যেমন: `192.168.1.15`) অ্যানালিটিক্সে সেভ করা যায় না। শেষ অক্টেটটি `0` বানিয়ে সংবেদনশীল তথ্য বাদ দিতে হয়। অথবা কোম্পানির নিজস্ব অফিসের অভ্যন্তরীণ ট্রাফিক (Internal Traffic) ফিল্টার করে বাদ দিতে হয়।
+
+* **JavaScript (ES5):**
+
+```javascript
+// IP Address এর শেষের অংশ ০ (Anonymize) করা
+var userIP = "192.168.1.105";
+
+// শেষের ৩টি সংখ্যাকে ০ দিয়ে রিপ্লেস করা
+var anonymizedIP = userIP.replace(/\.\d+$/, ".0");
+
+console.log(anonymizedIP); 
+// আউটপুট: "192.168.1.0"
+
+```
+
+* **Python:**
+
+```python
+import re
+
+user_ip = "192.168.1.105"
+
+# RegEx দিয়ে শেষ অংশ সরিয়ে ০ বসানো
+anonymized_ip = re.sub(r'\.\d+$', '.0', user_ip)
+
+print(anonymized_ip)
+# আউটপুট: "192.168.1.0"
+
+```
+
+---
+
+### কেস ৭: সার্চ কনসোল ও অ্যানালিটিক্স থেকে "Long-tail" এবং "Brand Keywords" আলাদা করা
+
+**সমস্যা:** SEO ও অ্যানালিটিক্স ডেটায় ব্যবহারকারীরা কী লিখে সার্চ করছে তা আলাদা করা প্রয়োজন। যেমন: ব্র্যান্ড নেম (যেমন: "Daraz") যুক্ত সার্চ বনাম নন-ব্র্যান্ড বা লং-টেইল কুয়েরি (যেমন: "best smartphone under 20000") আলাদা করা।
+
+* **JavaScript (ES5):**
+
+```javascript
+var searchQueries = [
+  "daraz online shopping",
+  "best laptop price in bd",
+  "daraz discount coupon",
+  "mobile phone offer"
+];
+
+// 'daraz' কথাটি আছে কি না চেক করা (Case insensitive)
+var brandPattern = /daraz/i;
+
+for (var i = 0; i < searchQueries.length; i++) {
+  if (brandPattern.test(searchQueries[i])) {
+    console.log("Brand Query: " + searchQueries[i]);
+  } else {
+    console.log("Non-Brand Query: " + searchQueries[i]);
+  }
+}
+
+```
+
+* **Python (Data Analytics in Pandas):**
+
+```python
+import pandas as pd
+
+queries = ["daraz online shopping", "best laptop price in bd", "daraz discount coupon", "mobile phone offer"]
+df = pd.DataFrame({'SearchQuery': queries})
+
+# ব্র্যান্ড কুয়েরির জন্য নতুন কলাম তৈরি
+df['QueryType'] = df['SearchQuery'].apply(lambda x: 'Brand' if re.search(r'daraz', x, re.I) else 'Non-Brand')
+
+print(df)
+'''
+আউটপুট:
+               SearchQuery QueryType
+0    daraz online shopping     Brand
+1  best laptop price in bd Non-Brand
+2    daraz discount coupon     Brand
+3       mobile phone offer Non-Brand
+'''
+
+```
+
+---
+
+### কেস ৮: ডিভাইস এবং ব্রাউজার ইউজার এজেন্ট (User-Agent) থেকে তথ্য বের করা
+
+**সমস্যা:** সার্ভার লগে ইউজারের ইউজার-এজেন্ট স্ট্রিং (যেমন: `Mozilla/5.0 (iPhone; CPU iPhone OS 15_0...`) থাকে। সেখান থেকে ইউজার **iPhone**, **Android** নাকি **Windows** ব্যবহার করছে তা সনাক্ত করা।
+
+* **JavaScript (ES5):**
+
+```javascript
+var userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15";
+
+function detectDevice(ua) {
+  if (/iPhone|iPad|iPod/i.test(ua)) {
+    return "iOS Device";
+  } else if (/Android/i.test(ua)) {
+    return "Android Device";
+  } else if (/Windows/i.test(ua)) {
+    return "Windows Desktop";
+  }
+  return "Unknown Device";
+}
+
+console.log(detectDevice(userAgent)); 
+// আউটপুট: "iOS Device"
+
+```
+
+* **Python:**
+
+```python
+import re
+
+user_agent = "Mozilla/5.0 (Linux; Android 11; SM-A505F) AppleWebKit/537.36"
+
+if re.search(r'Android', user_agent, re.I):
+    device = "Android"
+elif re.search(r'iPhone|iPad', user_agent, re.I):
+    device = "iOS"
+else:
+    device = "Other"
+
+print("ডিভাইস টাইপ:", device)
+# আউটপুট: "ডিভাইস টাইপ: Android"
+
+```
+
+---
+
+### কেস ৯: ই-কমার্স অর্ডার আইডি (SKU / Order Code) ফরম্যাট ভ্যালিডেশন
+
+**সমস্যা:** ই-কমার্স অ্যানালিটিক্সে ইভেন্ট ট্র্যাকিংয়ের সময় অর্ডার আইডি সঠিক ফরম্যাটে আছে কি না (যেমন: `ORD-2026-9876`) তা নিশ্চিত করা।
+
+* **JavaScript (ES5):**
+
+```javascript
+// ফরম্যাট: "ORD-" এর পর ৪টি সংখ্যা, তারপর "-" এবং ৪টি সংখ্যা
+var orderPattern = /^ORD-\d{4}-\d{4}$/;
+
+var validOrder = "ORD-2026-4321";
+var invalidOrder = "1234-ORD";
+
+console.log(orderPattern.test(validOrder));   // true
+console.log(orderPattern.test(invalidOrder)); // false
+
+```
+
+* **Python:**
+
+```python
+import re
+
+order_ids = ["ORD-2026-4321", "ORD-123", "INVALID-9999", "ORD-2026-9999"]
+pattern = r'^ORD-\d{4}-\d{4}$'
+
+valid_orders = [o for o in order_ids if re.match(pattern, o)]
+
+print("ভ্যালিড অর্ডার আইডি:", valid_orders)
+# আউটপুট: ভ্যালিড অর্ডার আইডি: ['ORD-2026-4321', 'ORD-2026-9999']
+
+```
+
+---
+
+### সংক্ষেপে
+
+* **ওয়েব অ্যানালিটিক্স (GTM, JS):** রিয়েল-টাইমে পেজ ভিউ, কাস্টম ক্লিক, ইভেন্ট ট্র্যাকিং এবং প্রাইভেসি মাস্কিংয়ের কাজ সহজ করে।
+* **ডেটা অ্যানালিটিক্স (Python, SQL):** অগোছালো ডাটাবেজ ক্লিওনিং, ক্লাসিফিকেশন, রিপোর্টিং ও সেগমেন্টেশনের কাজ অনেক দ্রুত সম্পন্ন করে।
+
+---
+
+এবার অ্যানালিটিক্সের একটু **অ্যাডভান্সড ও স্পেশালাইজড টেকনিক** দেখা যাক, যেগুলো বড় স্কেলের ডাটা প্রসেসিং, সিকিউরিটি এবং মেশিন লার্নিং ডাটা প্রিপারেশনের জন্য ব্যবহৃত হয়।
+
+নিচে আরও **৪টি অ্যাডভান্সড কেস স্টাডি** JavaScript (ES5) এবং Python কোডসহ দেওয়া হলো:
+
+---
+
+### কেস ১০: SQL Injection ও Malicious Script আক্রমণ সনাক্তকরণ (Security Analytics)
+
+**সমস্যা:** ওয়েব অ্যানালিটিক্স এবং লগে কিছু অসাধু অ্যাটাক ট্রাফিক জমা হয় (যেমন: `<script>` বা `UNION SELECT` ইনজেকশন)। ডাটা অ্যানালিটিক্স টিমের কাজ হলো ট্রাফিক ডাটা বিশ্লেষণ করে এই ক্ষতিকর প্যাটার্নগুলো ফ্ল্যাগ করা।
+
+* **JavaScript (ES5):**
+
+```javascript
+var searchPayload = "laptop' UNION SELECT * FROM users--";
+
+// সাধারণ SQL Injection প্যাটার্ন
+var sqlInjectionPattern = /(\b(SELECT|INSERT|DELETE|DROP|UNION)\b)|('--)/i;
+
+if (sqlInjectionPattern.test(searchPayload)) {
+  console.log("সতর্কতা: ক্ষতিকর সার্চ কুয়েরি সনাক্ত হয়েছে!");
+}
+
+```
+
+* **Python:**
+
+```python
+import re
+
+logs = [
+    "product_id=105",
+    "search=<script>alert('hack')</script>",
+    "user_id=12 OR 1=1"
+]
+
+# Script Injection বা SQLi সনাক্তকরণ
+security_pattern = r"(<script>|UNION\s+SELECT|OR\s+1=1)"
+
+flagged_logs = [log for log in logs if re.search(security_pattern, log, re.I)]
+print("ফ্ল্যাগ করা লগের তালিকা:", flagged_logs)
+# আউটপুট: ['search=<script>alert(\'hack\')</script>', 'user_id=12 OR 1=1']
+
+```
+
+---
+
+### কেস ১১: সোশ্যাল মিডিয়া ট্রাফিক সেগমেন্টেশন (Custom Attribution)
+
+**সমস্যা:** রেফারার লিঙ্কে Facebook-এর বিভিন্ন ভ্যারিয়েন্ট যেমন: `l.facebook.com`, `m.facebook.com`, `lm.facebook.com` বা `instagram.com` থাকতে পারে। এদের সবগুলোকে একসাথে "Social Media" সেগমেন্টে ক্যাটাগরাইজ করা।
+
+* **JavaScript (ES5):**
+
+```javascript
+var referrer = "https://l.facebook.com/l.php?u=https://mysite.com";
+
+// সোশ্যাল মিডিয়া ডোমেইন সনাক্তকরণ
+var socialPattern = /(facebook|instagram|linkedin|twitter|t\.co|pinterest)/i;
+
+function getTrafficChannel(ref) {
+  if (socialPattern.test(ref)) {
+    return "Social";
+  }
+  return "Other Channel";
+}
+
+console.log(getTrafficChannel(referrer)); // "Social"
+
+```
+
+* **Python:**
+
+```python
+import pandas as pd
+import re
+
+data = {'Referrer': ['https://m.facebook.com/', 'https://www.google.com/', 'https://t.co/xyz123']}
+df = pd.DataFrame(data)
+
+# RegEx দিয়ে চানেল ট্যাগ করা
+df['Channel'] = df['Referrer'].apply(
+    lambda x: 'Social' if re.search(r'(facebook|instagram|twitter|t\.co)', x, re.I) else 'Organic/Other'
+)
+
+print(df)
+
+```
+
+---
+
+### কেস ১২: ই-কমার্স রিভিউ থেকে "রেটিং ও প্রাইস" এক্সট্রাকশন (Unstructured Data Analytics)
+
+**সমস্যা:** স্ক্র্যাপ করা প্রোডাক্ট রিভিউ বা ফিডব্যাক ডাটা থেকে আনস্ট্রাকচার্ড টেক্সটের ভেতর থেকে প্রোডাক্ট প্রাইস (যেমন: `৳১৫০০` বা `$150`) এবং স্টার রেটিং বের করা।
+
+* **JavaScript (ES5):**
+
+```javascript
+var reviewText = "প্রোডাক্টটি ভালো ছিল, দাম নিয়েছে ৳1250 টাকা। আমি এটাকে 4.5/5 দেব।";
+
+// রেটিং এবং প্রাইস খুঁজে বের করা
+var priceMatch = reviewText.match(/৳?\s?(\d+)/);
+var ratingMatch = reviewText.match(/(\d(\.\d)?)\s?\/\s?5/);
+
+if (priceMatch) console.log("দাম: " + priceMatch[1]);     // 1250
+if (ratingMatch) console.log("রেটিং: " + ratingMatch[1]); // 4.5
+
+```
+
+* **Python:**
+
+```python
+import re
+
+review_text = "Good product for $150. I give it 4.8/5 stars."
+
+# ডলার বা মূল্যের পরিমাণ এক্সট্র্যাক্ট করা
+price = re.search(r'\$\d+', review_text)
+# রেটিং এক্সট্র্যাক্ট করা
+rating = re.search(r'(\d\.\d)/\d', review_text)
+
+if price: print("Price:", price.group(0))    # Price: $150
+if rating: print("Rating:", rating.group(1)) # Rating: 4.8
+
+```
+
+---
+
+### কেস ১৩: সেশন টাইম ফরম্যাট কনভার্সন (Log Analysis)
+
+**সমস্যা:** সার্ভার লগে সেশন ডিউরেশন বা টাইমস্ট্যাম্প ভিন্ন ফরম্যাটে থাকে (যেমন: `02h 15m 30s` বা `135m`). একে সেকেন্ডে রূপান্তর করার জন্য সংখ্যাগুলো আলাদা করা প্রয়োজন।
+
+* **JavaScript (ES5):**
+
+```javascript
+var duration = "02h 15m 30s";
+
+// ঘন্টা, মিনিট ও সেকেন্ড আলাদা করার জন্য Capturing Group
+var durationPattern = /(\d+)h\s*(\d+)m\s*(\d+)s/;
+var match = duration.match(durationPattern);
+
+if (match) {
+  var hours = parseInt(match[1]);
+  var minutes = parseInt(match[2]);
+  var seconds = parseInt(match[3]);
+  
+  var totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+  console.log("মোট সেশন টাইম (সেকেন্ডে): " + totalSeconds); // 8130
+}
+
+```
+
+* **Python:**
+
+```python
+import re
+
+duration = "02h 15m 30s"
+match = re.search(r'(\d+)h\s*(\d+)m\s*(\d+)s', duration)
+
+if match:
+    hours, minutes, seconds = map(int, match.groups())
+    total_seconds = hours * 3600 + minutes * 60 + seconds
+    print("মোট সেশন টাইম (সেকেন্ডে):", total_seconds) # 8130
+
+```
+
+---
+
+Google Tag Manager (GTM) এর কাস্টম ভ্যারিয়েন্ট কনফিগারেশন এবং BigQuery / SQL-এ RegEx ব্যবহারের প্র্যাকটিক্যাল গাইড দেওয়া হলো।
+
+---
+
+### ১. Google Tag Manager (GTM)-এ RegEx ও Custom JavaScript Variable
+
+GTM-এ RegEx মূলত **Custom JavaScript (CJS)** ভ্যারিয়েন্ট তৈরি এবং **Triggers** কনফিগার করতে ব্যবহৃত হয়।
+
+**সিনারিও:** ইউজার যখন কোনো ই-কমার্স পেজে থাকে, তখন URL থেকে SKU / Product ID বের করে ডেটালিয়ারে না পাঠালেও GTM-এর মাধ্যমে ট্র্যাকিং পিক্সেল পাঠানো।
+
+**CJS Variable: "CJS - Extract Product SKU"**
+GTM-এ `Custom JavaScript` সিলেক্ট করে নিচের ES5 কোডটি দেওয়া হয়:
+
+```javascript
+function() {
+  // GTM Built-in Variable {{Page Path}}
+  var path = {{Page Path}}; // উদাহরণ: "/p/electronics/samsung-galaxy-s24-SKU-998822"
+  
+  // SKU অংশ এক্সট্র্যাক্ট করার RegEx (SKU-এর পর থাকা ৬ ডিজিট)
+  var match = path.match(/SKU-(\d{6})/i);
+  
+  if (match && match[1]) {
+    return match[1]; // রিটার্ন করবে: "998822"
+  }
+  return "UNKNOWN_SKU";
+}
+
+```
+
+**GTM Trigger Filtering Example:**
+GTM ট্রিগারে সরাসরি RegEx Table বা Matches RegEx ব্যবহার করা যায়:
+
+* **Trigger Type:** Page View
+* **Condition:** `Page URL` -> `matches RegEx (ignore case)` -> `\/(checkout|cart|thank-you)\b`
+* **কাজ:** এটি শুধু Checkout, Cart, বা Thank You পেজে ট্রিপ্রিগার অন করবে।
+
+---
+
+### ২. BigQuery / SQL-এ RegEx ব্যবহার (Large Scale Analytics)
+
+BigQuery-তে লাখ লাখ ডাটার ওপর ফাস্ট কুয়েরি চালানোর জন্য RegEx ফাংশনগুলো (যেমন: `REGEXP_CONTAINS`, `REGEXP_EXTRACT`, `REGEXP_REPLACE`) ব্যবহৃত হয়।
+
+#### কেস ১: `REGEXP_EXTRACT` দিয়ে URL থেকে Domain/Subdomain আলাদা করা
+
+```sql
+SELECT
+  full_url,
+  -- URL থেকে ডোমেইন এক্সট্র্যাক্ট করা
+  REGEXP_EXTRACT(full_url, r'https?://([^/]+)') AS extracted_domain
+FROM
+  `your_project.analytics.page_views`
+LIMIT 5;
+
+```
+
+#### কেস ২: `REGEXP_CONTAINS` দিয়ে ট্রাফিক সেগমেন্টেশন (Where Clause)
+
+```sql
+SELECT
+  user_id,
+  page_path,
+  device_type
+FROM
+  `your_project.analytics.web_events`
+WHERE
+  -- শুধুমাত্র ব্লগ পোস্ট ও আর্টিকেলের পেজগুলো ফিল্টার করা
+  REGEXP_CONTAINS(page_path, r'^/(blog|articles)/[a-z0-9-]+');
+
+```
+
+#### কেস ৩: `REGEXP_REPLACE` দিয়ে PII / Sensitive Data ক্লিন করা
+
+```sql
+SELECT
+  user_feedback,
+  -- ফিডব্যাক থেকে মোবাইল নম্বর জিরো (0) দিয়ে মাস্কিং করা
+  REGEXP_REPLACE(user_feedback, r'01[3-9]\d{8}', '01XXXXXXXXX') AS anonymized_feedback
+FROM
+  `your_project.analytics.user_reviews`;
+
+```
+
+---
+
+### BigQuery vs GTM RegEx-এর পার্থক্য
+
+| বৈশিষ্ট্য | Google Tag Manager (GTM) | BigQuery / SQL |
+| --- | --- | --- |
+| **প্রসেসিং স্থান** | ক্লায়েন্ট সাইড (User Browser) | সার্ভার সাইড (Data Warehouse) |
+| **ভাষা** | JavaScript (ES5 standard) | RE2 RegEx Engine (SQL Syntax) |
+| **প্রয়োজনীয়তা** | রিয়েল-টাইম ডাটা ট্র্যাকিং ও ফিল্টারিং | ঐতিহাসিক ডাটা অ্যানালাইসিস ও ক্লিনআপ |
+
+---
+
+GTM (Google Tag Manager) এবং BigQuery/SQL-এ RegEx কীভাবে ব্যাকএন্ডে কাজ করে এবং কেন এদের ব্যবহারের পদ্ধতি ভিন্ন, তা সহজ ভাষায় বুঝিয়ে দেওয়া হলো।
+
+---
+
+### ১. GTM-এ RegEx যেভাবে কাজ করে
+
+GTM মূলত ব্রাউজারে (User End) রিয়েল-টাইমে চলে। যখনই কোনো ইউজার ওয়েবসাইটে ক্লিক করে বা পেজ লোড করে, GTM-এর ভেতরে থাকা রেগুলার এক্সপ্রেশন সাথে সাথেই সিদ্ধান্ত নেয় ডাটা Google Analytics বা Facebook Pixel-এ পাঠাবে কি না।
+
+* **CJS (Custom JavaScript Variable):** এটি একটি ছোট ফাংশন যা পেজের যেকোনো ডাটা (যেমন: URL, Click Text, Form ID) পড়ে নিয়ে RegEx দিয়ে ম্যাচ করে একটি নির্দিষ্ট রেজাল্ট রিটার্ন করে।
+* **Trigger (শর্ত নির্ধারণ):** আপনি যদি চান শুধুমাত্র ব্লগ পেজের ফর্ম সাবমিশন ট্র্যাক করবেন, তবে ট্রিগারে RegEx লিখে দিলে ব্রাউজার অন্য পেজে থাকা অবস্থায় ওই ট্যাগটি ট্রিগার করবে না।
+
+**সহজ কথায়:** GTM-এ RegEx হলো **"গেটকিপার"** বা পাহারাদার—যা ব্রাউজার থেকে ডাটা সার্ভারে যাওয়ার আগেই ফিল্টার বা ফরম্যাট করে দেয়।
+
+---
+
+### ২. BigQuery / SQL-এ RegEx যেভাবে কাজ করে
+
+BigQuery-তে ডাটা আগেই জমা হয়ে থাকে (ডাটা ওয়্যারহাউস)। এখানে লাখ লাখ বা কোটি কোটি রো (Row) ডাটা থেকে নির্দিষ্ট প্যাটার্ন খুঁজে বের করার জন্য SQL-এর সাথে RegEx ফাংশন ব্যবহার করা হয়।
+
+BigQuery-র প্রধান ৩টি ফাংশনের মূল কাজ:
+
+* **`REGEXP_CONTAINS(text, pattern)`:**
+* **কাজ:** এটি চেক করে লেখাতে প্যাটার্নটি আছে কি না। থাকলে `TRUE`, না থাকলে `FALSE` দেয়। (GTM-এর `test()` এর মতো)।
+* **ব্যবহার:** নির্দিষ্ট পেজ বা ইভেন্ট ফিল্টার করতে `WHERE` ক্লজে ব্যবহৃত হয়।
+
+
+* **`REGEXP_EXTRACT(text, pattern)`:**
+* **কাজ:** এটি পুরো টেক্সট থেকে শুধু নির্দিষ্ট অংশটি কেটে আলাদা করে নিয়ে আসে।
+* **ব্যবহার:** জটিল URL থেকে ক্যাটাগরি, প্রোডাক্ট আইডি বা UTM প্যারামিটার আলাদা করে নতুন কলাম তৈরি করতে।
+
+
+* **`REGEXP_REPLACE(text, pattern, replacement)`:**
+* **কাজ:** টেক্সটের ভেতরের কোনো অংশ খুঁজে নিয়ে নতুন কিছু দিয়ে বদলে দেয়।
+* **ব্যবহার:** ইউজারের ফোন নম্বর, ইমেইল বা সেনসিটিভ তথ্য মাস্ক করা কিংবা টাইপো ঠিক করার জন্য।
+
+
+
+**সহজ কথায়:** BigQuery-তে RegEx হলো **"ডাটা প্রসেসর"**—যা জমা থাকা বিশাল অগোছালো ডাটাকে এনালিটিক্স বা রিপোর্টিংয়ের উপযোগী করে সাজাতে সাহায্য করে।
+
+---
+
+### মূল পার্থক্য (কী খেয়াল রাখবেন)
+
+* **ইনজিন:** GTM ব্যবহার করে জাভাস্ক্রিপ্টের Standard RegEx Engine, আর BigQuery ব্যবহার করে Google-এর **RE2 Engine**।
+* **সিনট্যাক্স:** BigQuery-তে RegEx প্যাটার্নের আগে `r` লিখতে হয় (যেমন: `r'\d+'`), যাতে ব্যাকস্ল্যাশ (`\`) নিয়ে কোনো কনফিউশন না তৈরি হয়।
+
+ডাটা অ্যানালিটিক্সে দক্ষ হতে এই দুটি জায়গায় RegEx-এর ব্যবহার বুঝতে পারা অত্যন্ত গুরুত্বপূর্ণ।
+
+
+
 
