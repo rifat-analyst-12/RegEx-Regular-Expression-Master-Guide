@@ -432,3 +432,220 @@ JavaScript ES5-এ RegEx-এর ৪টি মৌলিক ফ্ল্যাগ 
 | **`pattern.exec(str)`** | String | `Array` (With details) | প্রতিটি ম্যাচের ইনডেক্স ও গ্রুপ ডিটেইলস লুপে পাওয়া। |
 | **`str.search(pattern)`** | RegEx | `Number` (Index) | প্যাটার্নটির শুরুর অবস্থান জানা। |
 | **`str.split(pattern)`** | RegEx | `Array` | জটিল চিহ্নের ভিত্তিতে টেক্সট কেটে অ্যারে বানানো। |
+
+
+
+ওয়েব অ্যানালিটিক্স (যেমন: Google Analytics 4, Adobe Analytics) এবং ডেটা অ্যানালিটিক্সে (Pandas, Python, JS-based Data Cleaning) **রেগুলার এক্সপ্রেশন (RegEx)** একটি অপরিহার্য হাতিয়ার।
+
+অ্যানালিটিক্সে ডেটা প্রায়শই অগোছালো (Unstructured / Messy) থাকে। যেমন: URL থেকে ট্র্যাকিং আইডি বা কুয়েরি প্যারামিটার আলাদা করা, ইমেইল বা ফোন নম্বর মাস্ক করা, সেনসিটিভ তথ্য বাদ দেওয়া, ডোমেইন নেম ফিল্টার করা ইত্যাদি কাজে RegEx সবচেয়ে বেশি সাহায্য করে।
+
+নিচে ওয়েব ও ডেটা অ্যানালিটিক্সে ব্যবহৃত **৫টি রিয়েল-লাইফ কেস স্টাডি** এবং সেগুলোর **JavaScript (ES5)** ও **Python** কোড উদাহরণ দিয়ে ব্যাখ্যা করা হলো:
+
+---
+
+### কেস ১: URL থেকে UTM / Query Parameters কেটে পরিষ্কার করা (Data Cleaning)
+
+**সমস্যা:** ওয়েব অ্যানালিটিক্সে ইউজাররা যখন ক্যাম্পেইন ট্র্যাকিং লিঙ্ক (`?utm_source=facebook&utm_medium=cpc`) দিয়ে ওয়েবসাইটে আসে, তখন ডাটাবেজে একই পেজের URL শত শত ভিন্ন ভিন্ন লাইনে জমা হয়। অ্যানালিটিক্স রিপোর্টে ক্লিন পেজ প্যাথ বের করতে কুয়েরি প্যারামিটার বাদ দেওয়া প্রয়োজন।
+
+* **JavaScript (ES5):**
+
+```javascript
+// অ্যানালিটিক্স ট্র্যাকিং স্ক্রিপ্টে পেজ URL ক্লিন করা
+var rawUrl = "https://example.com/products/phone?utm_source=facebook&utm_campaign=summer_sale";
+
+// '?' এবং এর পরের সব অংশ মুছে ফেলা
+var cleanUrl = rawUrl.replace(/\?.*$/, "");
+
+console.log(cleanUrl); 
+// আউটপুট: "https://example.com/products/phone"
+
+```
+
+* **Python (Pandas / Analytics Pipeline):**
+
+```python
+import re
+
+raw_url = "https://example.com/products/phone?utm_source=facebook&utm_campaign=summer_sale"
+
+# RegEx দিয়ে '?' থেকে শুরু করে বাকী অংশ সরিয়ে ফেলা
+clean_url = re.sub(r'\?.*$', '', raw_url)
+
+print(clean_url)
+# আউটপুট: "https://example.com/products/phone"
+
+```
+
+---
+
+### কেস ২: ইউজার বিহেভিয়ার ডাটা থেকে নির্দিষ্ট প্রোডাক্ট ক্যাটাগরি ফিল্টার করা (Segmentation)
+
+**সমস্যা:** আপনার কাছে হাজার হাজার ইউজার ক্লিক বা পেজ ভিউ ডাটা আছে। আপনি শুধু `/category/electronics/` বা `/category/fashion/` এর মত নির্দিষ্ট সেগমেন্টের পেজ ট্রাফিক আলাদা করতে চান।
+
+* **JavaScript (ES5):**
+
+```javascript
+var pagePaths = [
+  "/home",
+  "/category/electronics/phone-123",
+  "/about-us",
+  "/category/fashion/shirt-456"
+];
+
+// ক্যাটাগরি পেজ সনাক্ত করার নিয়ম
+var categoryPattern = /^\/category\/([^\/]+)\//;
+
+for (var i = 0; i < pagePaths.length; i++) {
+  var match = pagePaths[i].match(categoryPattern);
+  if (match) {
+    console.log("ক্যাটাগরি পেজ: " + pagePaths[i] + " | প্রধান ক্যাটাগরি: " + match[1]);
+  }
+}
+/* আউটপুট: 
+   ক্যাটাগরি পেজ: /category/electronics/phone-123 | প্রধান ক্যাটাগরি: electronics
+   ক্যাটাগরি পেজ: /category/fashion/shirt-456 | প্রধান ক্যাটাগরি: fashion
+*/
+
+```
+
+* **Python (Data Analysis with Pandas):**
+
+```python
+import pandas as pd
+
+# অ্যানালিটিক্স লগ ডাটাফ্রেম
+data = {'PagePath': ['/home', '/category/electronics/phone-123', '/about-us', '/category/fashion/shirt-456']}
+df = pd.DataFrame(data)
+
+# RegEx ফিল্টার: শুধুমাত্র /category/ যুক্ত পেজগুলো বের করা
+category_df = df[df['PagePath'].str.contains(r'^/category/', regex=True)]
+
+print(category_df)
+'''
+আউটপুট:
+                         PagePath
+1  /category/electronics/phone-123
+3     /category/fashion/shirt-456
+'''
+
+```
+
+---
+
+### কেস ৩: প্রাইভেসি ও GDPR বজায় রাখতে সেনসিটিভ ডাটা মাস্ক করা (PII Anonymization)
+
+**সমস্যা:** ইউজার বা অ্যানালিটিক্স লগে কখনো ভুলবশত ইউজারের মোবাইল নম্বর বা ইমেইল আইডি চলে আসলে তা অ্যানালিটিক্স প্ল্যাটফর্মে সেভ করা আইনগতভাবে অপরাধ (PII - Personally Identifiable Information Violation)। এটি মাস্ক করতে RegEx ব্যবহার করা হয়।
+
+* **JavaScript (ES5):**
+
+```javascript
+var userLog = "ইউজার সমস্যা জানিয়েছেন, যোগাযোগ নম্বর 01712345678 এবং ইমেইল test@gmail.com";
+
+// বাংলাদেশি মোবাইল নম্বর মাস্কিং (013-019XX...)
+var maskedLog = userLog.replace(/01[3-9]\d{8}/g, "01XXXXXXXXX");
+
+// ইমেইল মাস্কিং
+maskedLog = maskedLog.replace(/([a-zA-Z0-9._-]+)@([a-zA-Z0-9._-]+)/g, "***@***.com");
+
+console.log(maskedLog);
+// আউটপুট: "ইউজার সমস্যা জানিয়েছেন, যোগাযোগ নম্বর 01XXXXXXXXX এবং ইমেইল ***@***.com"
+
+```
+
+* **Python:**
+
+```python
+import re
+
+user_log = "ইউজার সমস্যা জানিয়েছেন, যোগাযোগ নম্বর 01712345678 এবং ইমেইল test@gmail.com"
+
+# মোবাইল নম্বর ও ইমেইল এক সাথে পরিবর্তন
+clean_log = re.sub(r'01[3-9]\d{8}', '01XXXXXXXXX', user_log)
+clean_log = re.sub(r'[\w\.-]+@[\w\.-]+', '***@***.com', clean_log)
+
+print(clean_log)
+# আউটপুট: "ইউজার সমস্যা জানিয়েছেন, যোগাযোগ নম্বর 01XXXXXXXXX এবং ইমেইল ***@***.com"
+
+```
+
+---
+
+### কেস ৪: রেফারার বা সোর্স থেকে ডোমেইন নেম এক্সট্র্যাক্ট করা (Traffic Source Attribution)
+
+**সমস্যা:** অ্যানালিটিক্সে ইউজারের ফুল রেফারার URL (যেমন: `[https://l.facebook.com/l.php?u=](https://l.facebook.com/l.php?u=)...`) থেকে মূল প্ল্যাটফর্ম বা চ্যানেল (যেমন: `facebook.com`) আলাদা করা।
+
+* **JavaScript (ES5):**
+
+```javascript
+var referrerUrl = "https://subdomain.google.com/search?q=javascript";
+
+// মূল ডোমেইন আলাদা করার প্যাটার্ন
+var domainPattern = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/i;
+var result = referrerUrl.match(domainPattern);
+
+if (result) {
+  console.log("সোর্স ডোমেইন: " + result[1]);
+}
+// আউটপুট: "সোর্স ডোমেইন: subdomain.google.com"
+
+```
+
+* **Python:**
+
+```python
+import re
+
+referrer_url = "https://subdomain.google.com/search?q=javascript"
+
+# ডোমেইন এক্সট্র্যাক্ট
+match = re.search(r'https?://(?:www\.)?([^/]+)', referrer_url)
+if match:
+    print("সোর্স ডোমেইন:", match.group(1))
+
+# আউটপুট: "সোর্স ডোমেইন: subdomain.google.com"
+
+```
+
+---
+
+### কেস ৫: ফর্ম ইনপুট এ্যারর বের করা (Conversion Rate Optimization / CRO)
+
+**সমস্যা:** ওয়েব অ্যানালিটিক্সে ফর্ম জমা দেওয়ার সময় ইউজাররা কেন ব্যর্থ হচ্ছে তা ট্র্যাক করতে, ক্লায়েন্ট সাইড বা অ্যানালিটিক্স ট্যাগ ম্যানেজারে (Google Tag Manager) ইনপুট ভ্যালিডেশন চেক করতে হয়।
+
+* **JavaScript (ES5 - GTM Custom JavaScript Variable এ ব্যবহৃত হয়):**
+
+```javascript
+// জিপ কোড (Zip Code) ঠিক আছে কি না যাচাই
+var zipCode = "1216"; // ঢাকা মিরপুর জিপ কোড 
+var bangladeshZipPattern = /^\d{4}$/; // ঠিক ৪টি সংখ্যা
+
+function validateZip(code) {
+  return bangladeshZipPattern.test(code);
+}
+
+console.log(validateZip(zipCode)); // true
+console.log(validateZip("12165")); // false
+
+```
+
+* **Python:**
+
+```python
+import re
+
+zip_codes = ["1216", "121", "12165", "DHAKA"]
+valid_pattern = r'^\d{4}$'
+
+valid_codes = [code for code in zip_codes if re.match(valid_pattern, code)]
+print("সঠিক জিপ কোডসমূহ:", valid_codes)
+
+# আউটপুট: সঠিক জিপ কোডসমূহ: ['1216']
+
+```
+
+---
+
+### সারসংক্ষেপ:
+
+* **JavaScript (ES5):** সাধারণত **Google Tag Manager (GTM)**, ডায়নামিক ট্র্যাকিং পিক্সেল, এবং ব্রাউজার সাইড ডাটা প্রসেসিং ও ইভেন্ট ট্র্যাকিংয়ের জন্য ব্যবহৃত হয়।
+* **Python:** সাধারণত অ্যানালিটিক্স ডাটাবেইজ, **BigQuery**, **Pandas**, বা **ETL Pipeline**-এ লাখ লাখ অগোছালো ডাটা রিক্লিন বা প্রসেস করার ক্ষেত্রে ব্যবহৃত হয়।
