@@ -433,8 +433,9 @@ JavaScript ES5-এ RegEx-এর ৪টি মৌলিক ফ্ল্যাগ 
 | **`str.search(pattern)`** | RegEx | `Number` (Index) | প্যাটার্নটির শুরুর অবস্থান জানা। |
 | **`str.split(pattern)`** | RegEx | `Array` | জটিল চিহ্নের ভিত্তিতে টেক্সট কেটে অ্যারে বানানো। |
 
+---
 
-ওয়েব অ্যানালিটিক্স (যেমন: Google Analytics 4, Adobe Analytics) এবং ডেটা অ্যানালিটিক্সে (Pandas, Python, JS-based Data Cleaning) **রেগুলার এক্সপ্রেশন (RegEx)** একটি অপরিহার্য হাতিয়ার।
+**ওয়েব অ্যানালিটিক্স** (যেমন: Google Analytics 4, Adobe Analytics) এবং ডেটা অ্যানালিটিক্সে (Pandas, Python, JS-based Data Cleaning) **রেগুলার এক্সপ্রেশন (RegEx)** একটি অপরিহার্য হাতিয়ার।
 
 অ্যানালিটিক্সে ডেটা প্রায়শই অগোছালো (Unstructured / Messy) থাকে। যেমন: URL থেকে ট্র্যাকিং আইডি বা কুয়েরি প্যারামিটার আলাদা করা, ইমেইল বা ফোন নম্বর মাস্ক করা, সেনসিটিভ তথ্য বাদ দেওয়া, ডোমেইন নেম ফিল্টার করা ইত্যাদি কাজে RegEx সবচেয়ে বেশি সাহায্য করে।
 
